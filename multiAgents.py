@@ -418,7 +418,55 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Useful information you can extract from a GameState (pacman.py)
+    newPos = currentGameState.getPacmanPosition()
+
+    # 2d array of food pellets left
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    score = currentGameState.getScore() * 1.2
+
+    # reward being closer to dots
+    food_reward = 0.0
+    count = 0
+    for i in range(newFood.width):
+      for j in range(newFood.height):
+        if (newFood[i][j]):
+          count+=1
+          dist = manhattanDistance(newPos, (i, j))
+          food_reward += (1.0/(dist)) * 3
+
+    # print(count)
+    score += food_reward
+
+    ghost_penalty = 0
+    for ghost in newGhostStates:
+      # only do the penalty if they ghost isn't scared of us.
+      if(ghost.scaredTimer == 0):
+        ghost_pos = ghost.getPosition()
+        pac_ghost_dist = manhattanDistance(newPos, ghost_pos)
+        if(pac_ghost_dist == 0):
+          ghost_penalty += 10000
+        else:
+          ghost_penalty += (1.0/(pac_ghost_dist)) * 6
+
+    score -= ghost_penalty
+
+
+    # if we remove this we get 997.1
+    ghost_eat = 0
+    for ghost in newGhostStates:
+      # only do the penalty if they ghost isn't scared of us.
+      if(ghost.scaredTimer > 0):
+        ghost_pos = ghost.getPosition()
+        pac_ghost_dist = manhattanDistance(newPos, ghost_pos)
+        if(pac_ghost_dist != 0):
+          ghost_eat += (1.0/(pac_ghost_dist)) * (30.0/ghost.scaredTimer)
+
+    score += ghost_eat
+
+    return score
 
 # Abbreviation
 better = betterEvaluationFunction
