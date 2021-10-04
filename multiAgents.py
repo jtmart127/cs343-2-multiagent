@@ -12,6 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
+from hashlib import new
 from util import manhattanDistance
 from game import Directions
 import random, util
@@ -69,12 +70,55 @@ class ReflexAgent(Agent):
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
+
+        # 2d array of food pellets left
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        score = successorGameState.getScore()
+
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+
+        # print (newPos)
+        # print (newFood)
+        # print(newGhostStates)
+        # print(newScaredTimes)
+        # print (score)
+
+        # reward being closer to dots
+        food_reward = 0.0
+        count = 0
+        for i in range(newFood.width):
+          for j in range(newFood.height):
+            if (newFood[i][j]):
+              count+=1
+              dist = manhattanDistance(newPos, (i, j))
+              food_reward += (1.0/(dist)) * 4
+
+        # print(count)
+        score += food_reward
+
+        ghost_penalty = 0
+        for ghost in newGhostStates:
+          # only do the penalty if they ghost isn't scared of us.
+          if(ghost.scaredTimer == 0):
+            ghost_pos = ghost.getPosition()
+            pac_ghost_dist = manhattanDistance(newPos, ghost_pos)
+            if(pac_ghost_dist == 0):
+              ghost_penalty += 10000
+            else:
+              ghost_penalty += (1.0/(pac_ghost_dist)) * 7
+
+        score -= ghost_penalty
+
+        # print(food_reward)
+        # print(ghost_penalty)
+        # print(score)
+        # print("\n\n")
+
+    
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
