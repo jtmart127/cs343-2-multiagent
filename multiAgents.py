@@ -429,11 +429,10 @@ def betterEvaluationFunction(currentGameState):
 
     # reward being closer to dots
     food_reward = 0.0
-    count = 0
+    
     for i in range(newFood.width):
       for j in range(newFood.height):
         if (newFood[i][j]):
-          count+=1
           dist = manhattanDistance(newPos, (i, j))
           food_reward += (1.0/(dist)) * 3
 
@@ -465,6 +464,9 @@ def betterEvaluationFunction(currentGameState):
           ghost_eat += (1.0/(pac_ghost_dist)) * (30.0/ghost.scaredTimer)
 
     score += ghost_eat
+
+
+
 
     return score
 
