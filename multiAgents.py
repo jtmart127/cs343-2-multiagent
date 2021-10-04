@@ -189,7 +189,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                               0) 
                               for action in gameState.getLegalActions(currentAgentNum)]
 
-                if (len(values) != 0 ):
+                if (len(values) != 0):
                     return min(values)
                 else:
                     return self.evaluationFunction(gameState)
@@ -200,6 +200,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                             depthLeft,
                             currentAgentNum+1)  
                             for action in gameState.getLegalActions(currentAgentNum)]
+
                 if (len(values) != 0 ):
                     return min(values)
                 else:
@@ -239,13 +240,102 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
     """
+    # Based on Geek for geeks minimax
+    # assume there is atleast one agent.
+    def alphabeta(self, gameState, depthLeft, currentAgentNum, alpha, beta):
+        """
+          Minimax based off agents.
+        """
+
+        if (depthLeft == 0):
+          return self.evaluationFunction(gameState)
+
+      # if we are pacman 
+      # looking for max
+        if (currentAgentNum == 0):
+          maxValue = -1000000000
+          for action in gameState.getLegalActions(currentAgentNum):
+            value = self.alphabeta(gameState.generateSuccessor(currentAgentNum, action),
+                                       depthLeft, currentAgentNum+1, alpha, beta)  
+
+            if (value > maxValue):
+              maxValue = value
+
+            if (maxValue > beta):
+              return maxValue
+
+            alpha = max(alpha, value)
+        
+          if (maxValue != -1000000000):
+            return maxValue
+          else:
+            return self.evaluationFunction(gameState)
+
+        # if our agent is a minimum
+        else: 
+          # if we are the last min then we need to update total depth and go back to pacman
+            if (currentAgentNum == gameState.getNumAgents() - 1):
+              minValue = 1000000000
+              for action in gameState.getLegalActions(currentAgentNum):
+                value = self.alphabeta(gameState.generateSuccessor(currentAgentNum, action),
+                                       depthLeft - 1, 0, alpha, beta)  
+
+                if (value < minValue):
+                  minValue = value
+
+                if (minValue < alpha):
+                  return minValue
+
+                beta = min(beta, value)
+        
+              if (minValue != 1000000000):
+                return minValue
+              else:
+                return self.evaluationFunction(gameState)
+
+
+            else: # just a normal minumum
+              minValue = 1000000000
+              for action in gameState.getLegalActions(currentAgentNum):
+                value = self.alphabeta(gameState.generateSuccessor(currentAgentNum, action),
+                                       depthLeft, currentAgentNum + 1, alpha, beta)  
+
+                if (value < minValue):
+                  minValue = value
+
+                if (minValue < alpha):
+                  return minValue
+
+                beta = min(beta, value)
+        
+              if (minValue != 1000000000):
+                return minValue
+              else:
+                return self.evaluationFunction(gameState)
+  
 
     def getAction(self, gameState):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        bestAction = None
+        bestValue = -1000000000
+        alpha = -1000000000
+        beta = 1000000000
+        for action in gameState.getLegalActions(0):
+            value = self.alphabeta(gameState.generateSuccessor(0, action), self.depth, 1, alpha, beta)  
+
+            if (value > bestValue):
+                bestValue = value
+                bestAction = action
+
+            if (bestValue > beta):
+                return bestAction
+
+            alpha = max(alpha, bestValue)
+
+        return bestAction
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
