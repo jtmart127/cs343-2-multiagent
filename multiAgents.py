@@ -341,6 +341,55 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
     """
+    def expectimaxValue(self, gameState, depthLeft, currentAgentNum):
+        """
+          Expectimax based off agents.
+        """
+
+        if (depthLeft == 0):
+          return self.evaluationFunction(gameState)
+
+      # if we are pacman
+        if (currentAgentNum == 0):
+          values = [self.expectimaxValue(
+                            gameState.generateSuccessor(currentAgentNum, action),
+                            depthLeft,
+                            currentAgentNum+1)  
+                            for action in gameState.getLegalActions(currentAgentNum)]
+
+          if (len(values) != 0 ):
+            return max(values)
+          else:
+            return self.evaluationFunction(gameState)
+
+        # if our agent is a minimum
+        else: 
+          # if we are the last min then we need to update total depth and go back to pacman
+            if (currentAgentNum == gameState.getNumAgents() - 1):
+                actions = gameState.getLegalActions(currentAgentNum)
+                values = [self.expectimaxValue(
+                              gameState.generateSuccessor(currentAgentNum, action), 
+                              depthLeft - 1,
+                              0) 
+                              for action in actions]
+
+                if (len(values) != 0):
+                    return sum(values) * (1.0/len(actions))
+                else:
+                    return self.evaluationFunction(gameState)
+
+            else: # just a normal minumum
+                actions = gameState.getLegalActions(currentAgentNum)
+                values = [self.expectimaxValue(
+                            gameState.generateSuccessor(currentAgentNum, action),
+                            depthLeft,
+                            currentAgentNum+1)  
+                            for action in actions]
+
+                if (len(values) != 0 ):
+                    return sum(values) * (1.0/len(actions))
+                else:
+                    return self.evaluationFunction(gameState)
 
     def getAction(self, gameState):
         """
@@ -350,7 +399,16 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        bestAction = None
+        bestValue = -1000000000
+        for action in gameState.getLegalActions(0):
+            value = self.expectimaxValue(gameState.generateSuccessor(0, action), self.depth, 1)  
+
+            if (value > bestValue):
+                bestValue = value
+                bestAction = action
+
+        return bestAction
 
 def betterEvaluationFunction(currentGameState):
     """
