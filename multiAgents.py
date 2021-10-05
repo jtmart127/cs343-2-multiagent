@@ -80,13 +80,7 @@ class ReflexAgent(Agent):
 
         "*** YOUR CODE HERE ***"
 
-        # print (newPos)
-        # print (newFood)
-        # print(newGhostStates)
-        # print(newScaredTimes)
-        # print (score)
-
-        # reward being closer to dots
+        # We reward being closer to dots.
         food_reward = 0.0
         count = 0
         for i in range(newFood.width):
@@ -96,12 +90,11 @@ class ReflexAgent(Agent):
               dist = manhattanDistance(newPos, (i, j))
               food_reward += (1.0/(dist)) * 4
 
-        # print(count)
         score += food_reward
 
         ghost_penalty = 0
         for ghost in newGhostStates:
-          # only do the penalty if they ghost isn't scared of us.
+          # Only do the penalty if they ghost isn't scared of us.
           if(ghost.scaredTimer == 0):
             ghost_pos = ghost.getPosition()
             pac_ghost_dist = manhattanDistance(newPos, ghost_pos)
@@ -112,12 +105,6 @@ class ReflexAgent(Agent):
 
         score -= ghost_penalty
 
-        # print(food_reward)
-        # print(ghost_penalty)
-        # print(score)
-        # print("\n\n")
-
-    
         return score
 
 def scoreEvaluationFunction(currentGameState):
@@ -156,8 +143,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
 
 
-    # Based on Geek for geeks minimax
-    # assume there is atleast one agent.
+    # Assume there is at least one agent.
     def minimaxValue(self, gameState, depthLeft, currentAgentNum):
         """
           Minimax based off agents.
@@ -166,7 +152,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         if (depthLeft == 0):
           return self.evaluationFunction(gameState)
 
-      # if we are pacman
+      # We are pacman.
         if (currentAgentNum == 0):
           values = [self.minimaxValue(
                             gameState.generateSuccessor(currentAgentNum, action),
@@ -179,9 +165,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
           else:
             return self.evaluationFunction(gameState)
 
-        # if our agent is a minimum
+        # Our agent is a minimum player.
         else: 
-          # if we are the last min then we need to update total depth and go back to pacman
+          # If we are the last minimum player, then we need to update total depth
+          # allowing pacman to play again.
             if (currentAgentNum == gameState.getNumAgents() - 1):
                 values = [self.minimaxValue(
                               gameState.generateSuccessor(currentAgentNum, action), 
@@ -194,7 +181,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 else:
                     return self.evaluationFunction(gameState)
 
-            else: # just a normal minumum
+            else: # Just a normal minumum player.
                 values = [self.minimaxValue(
                             gameState.generateSuccessor(currentAgentNum, action),
                             depthLeft,
@@ -250,8 +237,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         if (depthLeft == 0):
           return self.evaluationFunction(gameState)
 
-      # if we are pacman 
-      # looking for max
+      # We are pacman and are looking for the max value.
         if (currentAgentNum == 0):
           maxValue = -1000000000
           for action in gameState.getLegalActions(currentAgentNum):
@@ -271,9 +257,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           else:
             return self.evaluationFunction(gameState)
 
-        # if our agent is a minimum
+        # Our agent is a minimum.
         else: 
-          # if we are the last min then we need to update total depth and go back to pacman
+          # If we are the last minimum player, then we need to update total depth 
+          # and go back to pacman.
             if (currentAgentNum == gameState.getNumAgents() - 1):
               minValue = 1000000000
               for action in gameState.getLegalActions(currentAgentNum):
@@ -294,7 +281,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 return self.evaluationFunction(gameState)
 
 
-            else: # just a normal minumum
+            else: # Just a normal minumum.
               minValue = 1000000000
               for action in gameState.getLegalActions(currentAgentNum):
                 value = self.alphabeta(gameState.generateSuccessor(currentAgentNum, action),
@@ -349,7 +336,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         if (depthLeft == 0):
           return self.evaluationFunction(gameState)
 
-      # if we are pacman
+      # We are pacman.
         if (currentAgentNum == 0):
           values = [self.expectimaxValue(
                             gameState.generateSuccessor(currentAgentNum, action),
@@ -362,9 +349,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           else:
             return self.evaluationFunction(gameState)
 
-        # if our agent is a minimum
+        # Our agent is a minimum.
         else: 
-          # if we are the last min then we need to update total depth and go back to pacman
+          # If we are the last minimum player, then we need to update total depth 
+          # and go back to pacman.
             if (currentAgentNum == gameState.getNumAgents() - 1):
                 actions = gameState.getLegalActions(currentAgentNum)
                 values = [self.expectimaxValue(
@@ -378,7 +366,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 else:
                     return self.evaluationFunction(gameState)
 
-            else: # just a normal minumum
+            else: # Just a normal minumum.
                 actions = gameState.getLegalActions(currentAgentNum)
                 values = [self.expectimaxValue(
                             gameState.generateSuccessor(currentAgentNum, action),
@@ -427,7 +415,7 @@ def betterEvaluationFunction(currentGameState):
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
     score = currentGameState.getScore() * 1.2
 
-    # reward being closer to dots
+    # We reward being closer to dots.
     food_reward = 0.0
     
     for i in range(newFood.width):
@@ -436,12 +424,11 @@ def betterEvaluationFunction(currentGameState):
           dist = manhattanDistance(newPos, (i, j))
           food_reward += (1.0/(dist)) * 3
 
-    # print(count)
     score += food_reward
 
     ghost_penalty = 0
     for ghost in newGhostStates:
-      # only do the penalty if they ghost isn't scared of us.
+      # Only do the penalty if they ghost isn't scared of us.
       if(ghost.scaredTimer == 0):
         ghost_pos = ghost.getPosition()
         pac_ghost_dist = manhattanDistance(newPos, ghost_pos)
@@ -453,10 +440,10 @@ def betterEvaluationFunction(currentGameState):
     score -= ghost_penalty
 
 
-    # if we remove this we get 997.1
+    # This block gets the avg score up from 997.1 to 1000.8.
     ghost_eat = 0
     for ghost in newGhostStates:
-      # only do the penalty if they ghost isn't scared of us.
+      # Only do the penalty if they ghost isn't scared of us.
       if(ghost.scaredTimer > 0):
         ghost_pos = ghost.getPosition()
         pac_ghost_dist = manhattanDistance(newPos, ghost_pos)
@@ -464,9 +451,6 @@ def betterEvaluationFunction(currentGameState):
           ghost_eat += (1.0/(pac_ghost_dist)) * (30.0/ghost.scaredTimer)
 
     score += ghost_eat
-
-
-
 
     return score
 
